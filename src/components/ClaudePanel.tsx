@@ -26,7 +26,6 @@ const EXTENDED_CLAUDE_PRESETS = [
 
 export function ClaudePanel() {
   const [url, setUrl] = useState<string>(PRESET_URLS[0]);
-  const [customUrl, setCustomUrl] = useState<string | undefined>();
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("claude-3-7-sonnet-20250219");
   const [configExists, setConfigExists] = useState(false);
@@ -43,13 +42,11 @@ export function ClaudePanel() {
     setLoading(true);
     try {
       const cfg = await getClaudeConfig();
-      const loadedUrl = cfg.base_url || PRESET_URLS[0];
-      setUrl(loadedUrl);
-      if (
-        loadedUrl &&
-        !(PRESET_URLS as readonly string[]).includes(loadedUrl)
-      ) {
-        setCustomUrl(loadedUrl);
+      const loadedUrl = cfg.base_url;
+      if (loadedUrl && (PRESET_URLS as readonly string[]).includes(loadedUrl)) {
+        setUrl(loadedUrl);
+      } else {
+        setUrl(PRESET_URLS[0]);
       }
       setApiKey(cfg.api_key || "");
       setConfigExists(cfg.config_exists);
@@ -150,7 +147,6 @@ export function ClaudePanel() {
           </Label>
           <NodeCardSelector
             value={url}
-            customUrl={customUrl}
             onChange={setUrl}
             accentColor="purple"
           />

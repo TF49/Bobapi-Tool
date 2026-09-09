@@ -26,7 +26,6 @@ const EXTENDED_CODEX_PRESETS = [
 
 export function ChatGPTPanel() {
   const [url, setUrl] = useState<string>(PRESET_URLS[0]);
-  const [customUrl, setCustomUrl] = useState<string | undefined>();
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("gpt-4o");
   const [configExists, setConfigExists] = useState(false);
@@ -43,13 +42,11 @@ export function ChatGPTPanel() {
     setLoading(true);
     try {
       const cfg = await getCodexConfig();
-      const loadedUrl = cfg.base_url || PRESET_URLS[0];
-      setUrl(loadedUrl);
-      if (
-        loadedUrl &&
-        !(PRESET_URLS as readonly string[]).includes(loadedUrl)
-      ) {
-        setCustomUrl(loadedUrl);
+      const loadedUrl = cfg.base_url;
+      if (loadedUrl && (PRESET_URLS as readonly string[]).includes(loadedUrl)) {
+        setUrl(loadedUrl);
+      } else {
+        setUrl(PRESET_URLS[0]);
       }
       setApiKey(cfg.api_key || "");
       setConfigExists(cfg.config_exists);
@@ -146,12 +143,7 @@ export function ChatGPTPanel() {
           <Label className="text-xs font-semibold text-slate-700 dark:text-gray-300">
             API 服务节点
           </Label>
-          <NodeCardSelector
-            value={url}
-            customUrl={customUrl}
-            onChange={setUrl}
-            accentColor="blue"
-          />
+          <NodeCardSelector value={url} onChange={setUrl} accentColor="blue" />
         </div>
       </SpotlightCard>
 

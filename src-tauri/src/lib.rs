@@ -33,11 +33,7 @@ async fn check_bob_api_network() -> network::NetworkStatus {
 }
 
 #[tauri::command]
-async fn test_codex_config(
-    url: String,
-    api_key: String,
-    model: String,
-) -> api_test::ApiTestResult {
+async fn test_codex_config(url: String, api_key: String, model: String) -> api_test::ApiTestResult {
     api_test::test_codex_config(url, api_key, model).await
 }
 
