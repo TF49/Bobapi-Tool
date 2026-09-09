@@ -5,6 +5,7 @@ mod codex;
 mod claude;
 mod network;
 mod api_test;
+mod model_fetch;
 
 #[tauri::command]
 fn get_codex_config() -> Result<codex::CodexConfig, error::AppError> {
@@ -42,13 +43,13 @@ async fn test_claude_config(url: String, api_key: String, model: String) -> api_
 }
 
 #[tauri::command]
-async fn fetch_codex_models(url: String, api_key: String) -> Result<Vec<String>, String> {
-    api_test::fetch_codex_models(url, api_key).await
+async fn fetch_codex_models(url: String, api_key: String) -> Result<Vec<model_fetch::FetchedModel>, String> {
+    model_fetch::fetch_models(&url, &api_key).await
 }
 
 #[tauri::command]
-async fn fetch_claude_models(url: String, api_key: String) -> Result<Vec<String>, String> {
-    api_test::fetch_claude_models(url, api_key).await
+async fn fetch_claude_models(url: String, api_key: String) -> Result<Vec<model_fetch::FetchedModel>, String> {
+    model_fetch::fetch_models(&url, &api_key).await
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

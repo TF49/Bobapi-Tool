@@ -13,7 +13,8 @@ import { ApiKeyInput } from "./ApiKeyInput";
 import { ModelInput } from "./ModelInput";
 import { Button } from "./ui/Button";
 import { Label } from "./ui/Label";
-import { CLAUDE_MODEL_SUGGESTIONS, PRESET_URLS } from "../types";
+import { PRESET_URLS } from "../types";
+import { useModelFetch } from "../lib/useModelFetch";
 
 export function ClaudePanel() {
   const [url, setUrl] = useState<string>(PRESET_URLS[0]);
@@ -24,8 +25,11 @@ export function ClaudePanel() {
   const [configPath, setConfigPath] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [models, setModels] = useState<string[]>([...CLAUDE_MODEL_SUGGESTIONS]);
-  const [refreshingModels, setRefreshingModels] = useState(false);
+  const { models, refreshingModels, refreshModels } = useModelFetch(
+    url,
+    apiKey,
+    fetchClaudeModels,
+  );
 
   const load = async () => {
     setLoading(true);
@@ -52,28 +56,6 @@ export function ClaudePanel() {
   useEffect(() => {
     load();
   }, []);
-
-  const refreshModels = async () => {
-    if (!url.trim() || !apiKey.trim()) return;
-    setRefreshingModels(true);
-    try {
-      const fetched = await fetchClaudeModels(url.trim(), apiKey.trim());
-      setModels(fetched);
-      setModel((current) => (current.trim() ? current : fetched[0]));
-    } catch {
-      setModels([...CLAUDE_MODEL_SUGGESTIONS]);
-    } finally {
-      setRefreshingModels(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!apiKey.trim()) return;
-    const timer = window.setTimeout(() => void refreshModels(), 450);
-    return () => window.clearTimeout(timer);
-    // Refresh when credentials or endpoint change, matching cc-switch provider behavior.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, apiKey]);
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
@@ -159,13 +141,12 @@ export function ClaudePanel() {
       </div>
 
       <div className="space-y-1.5">
-        <Label>测试模型</Label>
         <ModelInput
           value={model}
           onChange={setModel}
-          suggestions={models}
+          models={models}
           placeholder="选择或输入模型名称"
-          listId="claude-models"
+          id="claude-models"
           onRefresh={() => void refreshModels()}
           refreshing={refreshingModels}
         />

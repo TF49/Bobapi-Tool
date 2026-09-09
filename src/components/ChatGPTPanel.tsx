@@ -13,7 +13,8 @@ import { ApiKeyInput } from "./ApiKeyInput";
 import { ModelInput } from "./ModelInput";
 import { Button } from "./ui/Button";
 import { Label } from "./ui/Label";
-import { CODEX_MODEL_SUGGESTIONS, PRESET_URLS } from "../types";
+import { PRESET_URLS } from "../types";
+import { useModelFetch } from "../lib/useModelFetch";
 
 export function ChatGPTPanel() {
   const [url, setUrl] = useState<string>(PRESET_URLS[0]);
@@ -24,8 +25,11 @@ export function ChatGPTPanel() {
   const [configPath, setConfigPath] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [models, setModels] = useState<string[]>([...CODEX_MODEL_SUGGESTIONS]);
-  const [refreshingModels, setRefreshingModels] = useState(false);
+  const { models, refreshingModels, refreshModels } = useModelFetch(
+    url,
+    apiKey,
+    fetchCodexModels,
+  );
 
   const load = async () => {
     setLoading(true);
@@ -52,28 +56,6 @@ export function ChatGPTPanel() {
   useEffect(() => {
     load();
   }, []);
-
-  const refreshModels = async () => {
-    if (!url.trim() || !apiKey.trim()) return;
-    setRefreshingModels(true);
-    try {
-      const fetched = await fetchCodexModels(url.trim(), apiKey.trim());
-      setModels(fetched);
-      setModel((current) => (current.trim() ? current : fetched[0]));
-    } catch {
-      setModels([...CODEX_MODEL_SUGGESTIONS]);
-    } finally {
-      setRefreshingModels(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!apiKey.trim()) return;
-    const timer = window.setTimeout(() => void refreshModels(), 450);
-    return () => window.clearTimeout(timer);
-    // Refresh when credentials or endpoint change, matching cc-switch provider behavior.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, apiKey]);
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
@@ -156,13 +138,12 @@ export function ChatGPTPanel() {
       </div>
 
       <div className="space-y-1.5">
-        <Label>测试模型</Label>
         <ModelInput
           value={model}
           onChange={setModel}
-          suggestions={models}
+          models={models}
           placeholder="选择或输入模型名称"
-          listId="codex-models"
+          id="codex-models"
           onRefresh={() => void refreshModels()}
           refreshing={refreshingModels}
         />

@@ -14,6 +14,11 @@ export interface ApiTestResult {
   message: string;
 }
 
+export interface FetchedModel {
+  id: string;
+  ownedBy: string | null;
+}
+
 export const PRESET_URLS = [
   'https://bob-api.com/',
   'https://taijiai.online/',
