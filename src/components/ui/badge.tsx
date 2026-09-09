@@ -13,13 +13,13 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
           "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
           variant === "success" && "bg-green-900/50 text-green-400",
           variant === "error" && "bg-red-900/50 text-red-400",
-          className
+          className,
         )}
         ref={ref}
         {...props}
       />
     );
-  }
+  },
 );
 Badge.displayName = "Badge";
 

@@ -20,21 +20,21 @@ export interface FetchedModel {
 }
 
 export const PRESET_URLS = [
-  'https://bob-api.com/',
-  'https://taijiai.online/',
+  "https://bob-api.com/",
+  "https://taijiai.online/",
 ] as const;
 
 export type PresetUrl = (typeof PRESET_URLS)[number];
 
 export const CODEX_MODEL_SUGGESTIONS = [
-  'gpt-5.2-codex',
-  'gpt-5.1-codex',
-  'gpt-5-codex',
-  'gpt-4.1',
+  "gpt-5.2-codex",
+  "gpt-5.1-codex",
+  "gpt-5-codex",
+  "gpt-4.1",
 ] as const;
 
 export const CLAUDE_MODEL_SUGGESTIONS = [
-  'claude-opus-4-5',
-  'claude-sonnet-4-5',
-  'claude-haiku-4-5',
+  "claude-opus-4-5",
+  "claude-sonnet-4-5",
+  "claude-haiku-4-5",
 ] as const;

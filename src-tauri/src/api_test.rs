@@ -14,13 +14,10 @@ pub struct ApiTestResult {
 pub async fn test_codex_config(url: String, api_key: String, model: String) -> ApiTestResult {
     let endpoint = format!("{}/v1/responses", api_root(&url));
     let client = Client::new();
-    let request = client
-        .post(endpoint)
-        .bearer_auth(api_key)
-        .json(&json!({
-            "model": model,
-            "input": "Hi",
-        }));
+    let request = client.post(endpoint).bearer_auth(api_key).json(&json!({
+        "model": model,
+        "input": "Hi",
+    }));
 
     send_test_request(request).await
 }

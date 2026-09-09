@@ -1,11 +1,11 @@
 use tauri::Manager;
 
-mod error;
-mod codex;
-mod claude;
-mod network;
 mod api_test;
+mod claude;
+mod codex;
+mod error;
 mod model_fetch;
+mod network;
 
 #[tauri::command]
 fn get_codex_config() -> Result<codex::CodexConfig, error::AppError> {
@@ -33,22 +33,36 @@ async fn check_bob_api_network() -> network::NetworkStatus {
 }
 
 #[tauri::command]
-async fn test_codex_config(url: String, api_key: String, model: String) -> api_test::ApiTestResult {
+async fn test_codex_config(
+    url: String,
+    api_key: String,
+    model: String,
+) -> api_test::ApiTestResult {
     api_test::test_codex_config(url, api_key, model).await
 }
 
 #[tauri::command]
-async fn test_claude_config(url: String, api_key: String, model: String) -> api_test::ApiTestResult {
+async fn test_claude_config(
+    url: String,
+    api_key: String,
+    model: String,
+) -> api_test::ApiTestResult {
     api_test::test_claude_config(url, api_key, model).await
 }
 
 #[tauri::command]
-async fn fetch_codex_models(url: String, api_key: String) -> Result<Vec<model_fetch::FetchedModel>, String> {
+async fn fetch_codex_models(
+    url: String,
+    api_key: String,
+) -> Result<Vec<model_fetch::FetchedModel>, String> {
     model_fetch::fetch_models(&url, &api_key).await
 }
 
 #[tauri::command]
-async fn fetch_claude_models(url: String, api_key: String) -> Result<Vec<model_fetch::FetchedModel>, String> {
+async fn fetch_claude_models(
+    url: String,
+    api_key: String,
+) -> Result<Vec<model_fetch::FetchedModel>, String> {
     model_fetch::fetch_models(&url, &api_key).await
 }
 

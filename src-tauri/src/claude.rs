@@ -1,6 +1,6 @@
-use std::path::PathBuf;
-use serde_json::Value;
 use crate::error::AppError;
+use serde_json::Value;
+use std::path::PathBuf;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct ClaudeConfig {
@@ -11,9 +11,8 @@ pub struct ClaudeConfig {
 }
 
 pub fn claude_config_path() -> Result<PathBuf, AppError> {
-    let home = dirs::home_dir().ok_or_else(|| {
-        AppError::ConfigNotFound("无法获取用户主目录".to_string())
-    })?;
+    let home = dirs::home_dir()
+        .ok_or_else(|| AppError::ConfigNotFound("无法获取用户主目录".to_string()))?;
     Ok(home.join(".claude").join("settings.json"))
 }
 

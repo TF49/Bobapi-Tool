@@ -1,6 +1,6 @@
+use crate::error::AppError;
 use std::path::PathBuf;
 use toml_edit::DocumentMut;
-use crate::error::AppError;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct CodexConfig {
@@ -11,9 +11,8 @@ pub struct CodexConfig {
 }
 
 pub fn codex_config_path() -> Result<PathBuf, AppError> {
-    let home = dirs::home_dir().ok_or_else(|| {
-        AppError::ConfigNotFound("无法获取用户主目录".to_string())
-    })?;
+    let home = dirs::home_dir()
+        .ok_or_else(|| AppError::ConfigNotFound("无法获取用户主目录".to_string()))?;
     Ok(home.join(".codex").join("config.toml"))
 }
 
