@@ -163,13 +163,26 @@ mod tests {
                         Err(error) => panic!("Mock server failed: {error}"),
                     }
                 };
+                stream.set_nonblocking(false).unwrap();
                 stream
-                    .set_read_timeout(Some(Duration::from_secs(3)))
+                    .set_read_timeout(Some(Duration::from_secs(5)))
+                    .unwrap();
+                stream
+                    .set_write_timeout(Some(Duration::from_secs(5)))
                     .unwrap();
                 let mut request = Vec::new();
                 let mut buffer = [0; 1024];
+                let read_deadline = Instant::now() + Duration::from_secs(5);
                 while !request.windows(4).any(|part| part == b"\r\n\r\n") {
-                    let count = stream.read(&mut buffer).unwrap();
+                    let count = match stream.read(&mut buffer) {
+                        Ok(count) => count,
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            assert!(Instant::now() < read_deadline, "Read request timed out");
+                            thread::sleep(Duration::from_millis(5));
+                            continue;
+                        }
+                        Err(error) => panic!("Failed to read request: {error}"),
+                    };
                     assert!(count > 0, "Incomplete model request");
                     request.extend_from_slice(&buffer[..count]);
                 }
@@ -179,6 +192,7 @@ mod tests {
                     "HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
                     body.len()
                 ).unwrap();
+                let _ = stream.flush();
             }
             requests
         });
