@@ -1,7 +1,10 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'  # 匹配 v1.0.0, v1.2.3 等格式
+  workflow_dispatch:  # 保留手动触发选项
 
 permissions:
   contents: write
