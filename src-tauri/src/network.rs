@@ -10,10 +10,7 @@ pub struct NetworkStatus {
 
 pub async fn check_bob_api_network() -> NetworkStatus {
     // Build HTTP client with timeout configuration
-    let client = match reqwest::Client::builder()
-        .timeout(CHECK_TIMEOUT)
-        .build()
-    {
+    let client = match reqwest::Client::builder().timeout(CHECK_TIMEOUT).build() {
         Ok(c) => c,
         Err(_) => return NetworkStatus { reachable: false },
     };
